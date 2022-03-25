@@ -43,6 +43,6 @@
     "lint-staged": ">=10"
   },
   "lint-staged": {
-    "*.{js,jsx}": "eslint --cache --fix"
+    "*.{js,jsx}": "eslint --fix"
   }
 }
