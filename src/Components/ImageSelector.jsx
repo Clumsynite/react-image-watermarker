@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Image, Message } from 'semantic-ui-react';
 
 import { PlaceholderImage } from '../assets/images';
-import { beforeUpload, getBase64 } from '../helper/fucntions';
+import { beforeUpload, getBase64 } from '../helper/functions';
 
 export default function ImageSelector({ base64, setBase64, watermark }) {
   const [error, setError] = useState('');
