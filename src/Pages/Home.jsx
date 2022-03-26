@@ -7,6 +7,7 @@ import ImageSelector from '../Components/ImageSelector';
 export default function Home() {
   const [base64, setBase64] = useState('');
   const [watermarkText, setWatermarkText] = useState('');
+  const [fontSize, setFontSize] = useState(16);
 
   const onTextChange = (event) => setWatermarkText(event.target.value);
 
@@ -24,21 +25,24 @@ export default function Home() {
       ctx.imageSmoothingEnabled = false;
       ctx.drawImage(existingImage, 0, 0, newWidth, newHeight);
       ctx.clearRect(0, 0, newWidth, newHeight);
-      ctx.font = '20px Verdana';
+      ctx.font = `${fontSize}px Verdana`;
       ctx.drawImage(existingImage, 0, 0, newWidth, newHeight);
       ctx.fillStyle = 'white';
+      ctx.lineStyle = 'black';
       ctx.fillText(text, 10, 50);
     }
   };
 
   useEffect(() => {
     if (base64) changeTextOnImage(watermarkText);
-  }, [watermarkText]);
+  }, [watermarkText, fontSize]);
 
   const changeImage = (image) => {
     setWatermarkText('');
     setBase64(image);
   };
+
+  const onFontSizeChange = (e) => setFontSize(e.target.value);
 
   return (
     <Container style={{ padding: '12px 0' }}>
@@ -56,13 +60,25 @@ export default function Home() {
       {base64 && (
         <Grid>
           <Grid.Row centered>
-            <Input
-              placeholder="WATERMARK"
-              size="huge"
-              onChange={onTextChange}
-              label="Enter text for Watermark: "
-              value={watermarkText}
-            />
+            <Grid.Column width={8}>
+              <Input
+                placeholder="WATERMARK"
+                size="huge"
+                onChange={onTextChange}
+                label="Enter text for Watermark: "
+                value={watermarkText}
+              />
+            </Grid.Column>
+            <Grid.Column width={8}>
+              <Input
+                type="number"
+                placeholder="16"
+                size="huge"
+                onChange={onFontSizeChange}
+                label="Enter Watermark Size: "
+                value={fontSize}
+              />
+            </Grid.Column>
           </Grid.Row>
         </Grid>
       )}
