@@ -1,15 +1,12 @@
 import _ from 'lodash';
 import { string, func } from 'prop-types';
 import React, { useState, useEffect } from 'react';
-import {
-  Dimmer, Image, Loader, Message, Segment,
-} from 'semantic-ui-react';
+import { Image, Message } from 'semantic-ui-react';
 
 import { PlaceholderImage } from '../assets/images';
 import { beforeUpload, getBase64 } from '../helper/fucntions';
 
 export default function ImageSelector({ base64, setBase64 }) {
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -18,13 +15,10 @@ export default function ImageSelector({ base64, setBase64 }) {
       const { files } = event.target;
       const file = files[0];
       if (!file) throw new Error('No file selected');
-      setIsLoading(true);
       const imageUri = await getBase64(file);
-      setIsLoading(false);
       setSelectedFile(file);
       setBase64(imageUri);
     } catch (err) {
-      setIsLoading(false);
       const message = _.isString(err)
         ? err
         : err.message || 'Something went wrong';
@@ -45,11 +39,7 @@ export default function ImageSelector({ base64, setBase64 }) {
   }, [error]);
 
   return (
-    <Segment>
-      <Dimmer active={isLoading} inverted>
-        <Loader size="mini">Loading</Loader>
-      </Dimmer>
-
+    <>
       {base64 ? (
         <Image src={base64} size="medium" centered label={selectedFile.name} />
       ) : (
@@ -95,7 +85,7 @@ export default function ImageSelector({ base64, setBase64 }) {
         </div>
       )}
       {error && <Message color="red">{error}</Message>}
-    </Segment>
+    </>
   );
 }
 ImageSelector.propTypes = {
