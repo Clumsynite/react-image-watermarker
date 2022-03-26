@@ -3,11 +3,13 @@ import {
   Container, Grid, Header, Input, Segment,
 } from 'semantic-ui-react';
 import ImageSelector from '../Components/ImageSelector';
+import { isHexValid } from '../helper/functions';
 
 export default function Home() {
   const [base64, setBase64] = useState('');
   const [watermarkText, setWatermarkText] = useState('');
   const [fontSize, setFontSize] = useState(16);
+  const [hexColor, setHexColor] = useState('fff');
 
   const onTextChange = (event) => setWatermarkText(event.target.value);
 
@@ -27,15 +29,18 @@ export default function Home() {
       ctx.clearRect(0, 0, newWidth, newHeight);
       ctx.font = `${fontSize}px Verdana`;
       ctx.drawImage(existingImage, 0, 0, newWidth, newHeight);
-      ctx.fillStyle = 'white';
-      ctx.lineStyle = 'black';
+      const color = `#${hexColor}`;
+      ctx.fillStyle = isHexValid(color) ? color : '#fff';
       ctx.fillText(text, 10, 50);
+
+      // ctx.strokeStyle = '#000';
+      // ctx.strokeText(text, 10, 50);
     }
   };
 
   useEffect(() => {
     if (base64) changeTextOnImage(watermarkText);
-  }, [watermarkText, fontSize]);
+  }, [watermarkText, fontSize, hexColor]);
 
   const changeImage = (image) => {
     setWatermarkText('');
@@ -43,6 +48,8 @@ export default function Home() {
   };
 
   const onFontSizeChange = (e) => setFontSize(e.target.value);
+
+  const onHexColorChange = (e) => setHexColor(e.target.value);
 
   return (
     <Container style={{ padding: '12px 0' }}>
@@ -59,7 +66,7 @@ export default function Home() {
       </Segment>
       {base64 && (
         <Grid>
-          <Grid.Row centered>
+          <Grid.Row centered verticalAlign="middle">
             <Grid.Column width={8}>
               <Input
                 placeholder="WATERMARK"
@@ -78,6 +85,29 @@ export default function Home() {
                 label="Enter Watermark Size: "
                 value={fontSize}
               />
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row centered verticalAlign="middle">
+            <Grid.Column width={8}>
+              <Input
+                type="text"
+                placeholder="fff"
+                size="huge"
+                onChange={onHexColorChange}
+                label="Enter Font color (HEX): "
+                input={(
+                  <input
+                    style={{
+                      borderColor: isHexValid(`#${hexColor}`)
+                        ? `#${hexColor}`
+                        : '#000',
+                    }}
+                  />
+                )}
+              />
+            </Grid.Column>
+            <Grid.Column width={8}>
+              <span />
             </Grid.Column>
           </Grid.Row>
         </Grid>
