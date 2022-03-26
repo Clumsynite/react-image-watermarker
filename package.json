@@ -2,6 +2,12 @@
   "name": "react-image-watermarker",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://clumsynite.github.io/react-image-watermarker",
+  "author": {
+    "email": "rishabhjpathak@gmail.com",
+    "name": "Rishabh Pathak",
+    "url": "https://github.com/clumsynite"
+  },
   "dependencies": {
     "lodash": "^4.17.21",
     "prop-types": "^15.8.1",
