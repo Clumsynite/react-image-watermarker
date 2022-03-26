@@ -19,4 +19,9 @@ function beforeUpload(file) {
   return isJpgOrPng && isLt2M;
 }
 
-export { getBase64, beforeUpload };
+const isHexValid = (hex) => {
+  const regex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
+  return regex.test(hex);
+};
+
+export { getBase64, beforeUpload, isHexValid };
