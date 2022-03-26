@@ -49,6 +49,7 @@ export default function ImageSelector({ base64, setBase64 }) {
               label={selectedFile.name}
               centered
             />
+            <canvas id="canvas" />
           </Grid.Row>
           <Grid.Row verticalAlign="middle" centered>
             <Grid.Column textAlign="center" width={8}>
