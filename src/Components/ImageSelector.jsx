@@ -1,17 +1,18 @@
 import _ from 'lodash';
-import { string, func } from 'prop-types';
+import { bool, string, func } from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import { Grid, Image, Message } from 'semantic-ui-react';
 
 import { PlaceholderImage } from '../assets/images';
 import { beforeUpload, getBase64 } from '../helper/fucntions';
 
-export default function ImageSelector({ base64, setBase64 }) {
+export default function ImageSelector({ base64, setBase64, watermark }) {
   const [error, setError] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
 
   const handleChange = async (event) => {
     try {
+      setBase64('');
       const { files } = event.target;
       const file = files[0];
       if (!file) throw new Error('No file selected');
@@ -42,14 +43,15 @@ export default function ImageSelector({ base64, setBase64 }) {
     <>
       {base64 ? (
         <Grid>
-          <Grid.Row textAlign="center">
-            <Image
+          <Grid.Row textAlign="center" centered>
+            <img
               src={base64}
-              size="huge"
-              label={selectedFile.name}
-              centered
+              title={selectedFile.name}
+              alt={selectedFile.name}
+              width={600}
+              height="auto"
             />
-            <canvas id="canvas" />
+            {watermark && <canvas id="canvas" width={600} height="auto" />}
           </Grid.Row>
           <Grid.Row verticalAlign="middle" centered>
             <Grid.Column textAlign="center" width={8}>
@@ -103,10 +105,12 @@ export default function ImageSelector({ base64, setBase64 }) {
 ImageSelector.propTypes = {
   base64: string,
   setBase64: func,
+  watermark: bool,
 };
 ImageSelector.defaultProps = {
   base64: '',
   setBase64: () => {},
+  watermark: false,
 };
 
 function UploadButton({ label, onChange, onBeforeInput }) {
