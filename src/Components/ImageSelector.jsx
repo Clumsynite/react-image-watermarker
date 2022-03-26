@@ -51,7 +51,14 @@ export default function ImageSelector({ base64, setBase64, watermark }) {
               width={600}
               height="auto"
             />
-            {watermark && <canvas id="canvas" width={600} height="auto" />}
+            {watermark && (
+              <canvas
+                id="canvas"
+                width={600}
+                height="auto"
+                style={{ position: 'absolute' }}
+              />
+            )}
           </Grid.Row>
           <Grid.Row verticalAlign="middle" centered>
             <Grid.Column textAlign="center" width={8}>
