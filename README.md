@@ -1,4 +1,16 @@
-# React Image Watermark
+# React Image Watermarker
+
+## Introduction
+
+A Simple Image Watermarer with few basic editing options.
+
+Options include
+
+- watermark text
+- change font size
+- change font color
+- change position on image
+- rotate watermark text by 45 degrees
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
