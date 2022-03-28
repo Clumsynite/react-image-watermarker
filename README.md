@@ -12,9 +12,27 @@ Options include
 - change position on image
 - rotate watermark text by 45 degrees
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Screenshots
+
+### Home
+
+This screen is visible when you open the app.
+
+![Home Screen](./screenshots/home.png)
+
+You can see an option to `Select an Image`.
+
+### Watermark Options
+
+After selecting an image on homepage. You can see that image with options to add watermark text.
+
+![Image Options](./screenshots/image_options.png)
+
+After making changes with the watermark, you can click on `Download Image` to download the Watermarked image to your system.
 
 ## Available Scripts
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 In the project directory, you can run:
 
