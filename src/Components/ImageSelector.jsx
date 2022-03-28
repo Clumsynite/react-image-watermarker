@@ -1,14 +1,21 @@
 import _ from 'lodash';
-import { bool, string, func } from 'prop-types';
+import {
+  object, bool, string, func,
+} from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import { Grid, Image, Message } from 'semantic-ui-react';
 
 import { PlaceholderImage } from '../assets/images';
 import { beforeUpload, getBase64 } from '../helper/functions';
 
-export default function ImageSelector({ base64, setBase64, watermark }) {
+export default function ImageSelector({
+  base64,
+  setBase64,
+  watermark,
+  selectedFile,
+  setSelectedFile,
+}) {
   const [error, setError] = useState('');
-  const [selectedFile, setSelectedFile] = useState(null);
 
   const handleChange = async (event) => {
     try {
@@ -113,11 +120,16 @@ ImageSelector.propTypes = {
   base64: string,
   setBase64: func,
   watermark: bool,
+  // eslint-disable-next-line react/forbid-prop-types
+  selectedFile: object,
+  setSelectedFile: func,
 };
 ImageSelector.defaultProps = {
   base64: '',
   setBase64: () => {},
   watermark: false,
+  selectedFile: null,
+  setSelectedFile: () => {},
 };
 
 function UploadButton({ label, onChange, onBeforeInput }) {
