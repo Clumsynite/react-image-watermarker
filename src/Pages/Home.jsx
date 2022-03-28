@@ -10,9 +10,14 @@ import {
   Segment,
 } from 'semantic-ui-react';
 import ImageSelector from '../Components/ImageSelector';
-import { isHexValid } from '../helper/functions';
+import {
+  downloadBase64AsImage,
+  getFilenameAndExtension,
+  isHexValid,
+} from '../helper/functions';
 
 export default function Home() {
+  const [selectedFile, setSelectedFile] = useState(null);
   const [base64, setBase64] = useState('');
   const [watermarkText, setWatermarkText] = useState('');
   const [fontSize, setFontSize] = useState(40);
@@ -20,6 +25,7 @@ export default function Home() {
   const [horizontalPosition, setHorizontalPosition] = useState('center');
   const [verticalPosition, setVerticalPosition] = useState('center');
   const [currentAngle, setCurrentAngle] = useState(0);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const horizontalPositions = ['center', 'left', 'right'];
   const verticalPositions = ['center', 'top', 'bottom'];
@@ -139,6 +145,70 @@ export default function Home() {
 
   const onRotateRight = () => setCurrentAngle(currentAngle + angleRotation);
 
+  // recreate image with a canvas which has the original image resolution
+  const onDownloadImage = () => {
+    if (!watermarkText) {
+      setIsDownloading(true);
+      const { filename, extension } = getFilenameAndExtension(selectedFile);
+      downloadBase64AsImage(base64, `${filename}_download.${extension}`);
+      setIsDownloading(false);
+      return;
+    }
+    setIsDownloading(true);
+
+    const canvas = document.createElement('canvas');
+    canvas.id = 'idCanvas';
+    const ctx = canvas.getContext('2d');
+    const imageObj = new Image();
+    imageObj.onload = async () => {
+      canvas.width = imageObj.width;
+      canvas.crossOrigin = 'Anonymous';
+      canvas.height = imageObj.height;
+      ctx.drawImage(imageObj, 0, 0);
+      ctx.clearRect(0, 0, imageObj.width, imageObj.height);
+
+      const newHeight = (imageObj.height * 600) / imageObj.width;
+      // 600 is the width of img you see on page
+
+      const responsiveFontSize = (imageObj.height * fontSize) / newHeight;
+
+      ctx.font = `${responsiveFontSize}px Verdana`;
+      ctx.drawImage(imageObj, 0, 0);
+      const color = `#${hexColor}`;
+      ctx.fillStyle = isHexValid(color) ? color : '#fff';
+
+      const { left } = getCoordinates(
+        horizontalPosition,
+        imageObj.width,
+        imageObj.height,
+      );
+      const { top } = getCoordinates(
+        verticalPosition,
+        imageObj.width,
+        imageObj.height,
+      );
+
+      const x = left || 0;
+      const y = top || 0;
+
+      const radians = currentAngle * (Math.PI / 180);
+
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.translate(x, y);
+      ctx.rotate(radians);
+      ctx.fillText(watermarkText, 0, 0);
+      ctx.restore();
+      const dataURL = canvas.toDataURL();
+      const { filename } = getFilenameAndExtension(selectedFile);
+      downloadBase64AsImage(dataURL, `${filename}_watermarked.png`);
+      setIsDownloading(false);
+    };
+    imageObj.setAttribute('crossOrigin', 'anonymous');
+    imageObj.src = base64;
+  };
+
   return (
     <Container style={{ padding: '12px 0' }}>
       <Header size="huge" style={{ borderBottom: '1px solid #000009' }}>
@@ -150,6 +220,8 @@ export default function Home() {
           base64={base64}
           setBase64={changeImage}
           watermark={!!watermarkText}
+          selectedFile={selectedFile}
+          setSelectedFile={setSelectedFile}
         />
       </Segment>
       {base64 && (
@@ -262,6 +334,16 @@ export default function Home() {
                 />
               </Button.Group>
             </Grid.Column>
+          </Grid.Row>
+          <Grid.Row centered verticalAlign="middle">
+            <Button
+              content="Download Image"
+              icon="download"
+              size="huge"
+              color="blue"
+              onClick={onDownloadImage}
+              loading={isDownloading}
+            />
           </Grid.Row>
         </Grid>
       )}
