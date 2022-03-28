@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import React, { useState, useEffect } from 'react';
 import {
+  Button,
   Container,
   Dropdown,
   Grid,
@@ -18,8 +19,11 @@ export default function Home() {
   const [hexColor, setHexColor] = useState('fff');
   const [horizontalPosition, setHorizontalPosition] = useState('center');
   const [verticalPosition, setVerticalPosition] = useState('center');
+  const [currentAngle, setCurrentAngle] = useState(0);
+
   const horizontalPositions = ['center', 'left', 'right'];
   const verticalPositions = ['center', 'top', 'bottom'];
+  const angleRotation = 45;
 
   const getCoordinates = (position, width, height) => {
     switch (position) {
@@ -67,7 +71,6 @@ export default function Home() {
       canvas.width = newWidth;
       canvas.crossOrigin = 'Anonymous';
       canvas.height = newHeight;
-      // ctx.imageSmoothingEnabled = false;
 
       ctx.drawImage(existingImage, 0, 0, newWidth, newHeight);
       ctx.clearRect(0, 0, newWidth, newHeight);
@@ -78,9 +81,19 @@ export default function Home() {
 
       const { left } = getCoordinates(horizontalPosition, width, height);
       const { top } = getCoordinates(verticalPosition, width, height);
-      const textWidth = ctx.measureText(text).width;
 
-      ctx.fillText(text, left - textWidth / 2, top);
+      const x = left;
+      const y = top;
+
+      const radians = currentAngle * (Math.PI / 180);
+
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.translate(x, y);
+      ctx.rotate(radians);
+      ctx.fillText(text, 0, 0);
+      ctx.restore();
 
       // ctx.strokeStyle = '#000';
       // ctx.strokeText(text, 10, 50);
@@ -89,7 +102,14 @@ export default function Home() {
 
   useEffect(() => {
     if (base64) changeTextOnImage(watermarkText);
-  }, [watermarkText, fontSize, hexColor, horizontalPosition, verticalPosition]);
+  }, [
+    watermarkText,
+    fontSize,
+    hexColor,
+    horizontalPosition,
+    verticalPosition,
+    currentAngle,
+  ]);
 
   const resetValues = () => {
     setWatermarkText('');
@@ -97,6 +117,7 @@ export default function Home() {
     setHexColor('fff');
     setHorizontalPosition('center');
     setVerticalPosition('center');
+    setCurrentAngle(0);
   };
 
   const changeImage = (image) => {
@@ -113,6 +134,10 @@ export default function Home() {
   const onHorizontalPositionChange = (e, { value }) => setHorizontalPosition(value);
 
   const onVerticalPositionChange = (e, { value }) => setVerticalPosition(value);
+
+  const onRotateLeft = () => setCurrentAngle(currentAngle - angleRotation);
+
+  const onRotateRight = () => setCurrentAngle(currentAngle + angleRotation);
 
   return (
     <Container style={{ padding: '12px 0' }}>
@@ -214,6 +239,28 @@ export default function Home() {
                   </Dropdown.Menu>
                 </Dropdown>
               </Grid.Row>
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row centered verticalAlign="middle">
+            <Grid.Column width={8}>
+              <span />
+            </Grid.Column>
+            <Grid.Column width={8}>
+              <Button.Group>
+                <Button
+                  icon="undo"
+                  content="Rotate Watermark Left"
+                  labelPosition="left"
+                  onClick={onRotateLeft}
+                />
+                <Button.Or />
+                <Button
+                  icon="redo"
+                  content="Rotate Watermark Right"
+                  labelPosition="right"
+                  onClick={onRotateRight}
+                />
+              </Button.Group>
             </Grid.Column>
           </Grid.Row>
         </Grid>
