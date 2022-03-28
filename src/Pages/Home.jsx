@@ -1,6 +1,12 @@
+import _ from 'lodash';
 import React, { useState, useEffect } from 'react';
 import {
-  Container, Grid, Header, Input, Segment,
+  Container,
+  Dropdown,
+  Grid,
+  Header,
+  Input,
+  Segment,
 } from 'semantic-ui-react';
 import ImageSelector from '../Components/ImageSelector';
 import { isHexValid } from '../helper/functions';
@@ -8,10 +14,35 @@ import { isHexValid } from '../helper/functions';
 export default function Home() {
   const [base64, setBase64] = useState('');
   const [watermarkText, setWatermarkText] = useState('');
-  const [fontSize, setFontSize] = useState(16);
+  const [fontSize, setFontSize] = useState(40);
   const [hexColor, setHexColor] = useState('fff');
+  const [selectedPosition, setSelectedPosition] = useState('center');
+  const positions = ['center', 'left', 'right'];
 
-  const onTextChange = (event) => setWatermarkText(event.target.value);
+  const getCoordinates = (position, width, height) => {
+    switch (position) {
+      case 'center':
+        return {
+          top: height / 2,
+          left: width / 2,
+        };
+      case 'left':
+        return {
+          top: height / 2,
+          left: width / 4,
+        };
+      case 'right':
+        return {
+          top: height / 2,
+          left: (width / 4) * 3,
+        };
+      default:
+        return {
+          top: height / 2,
+          left: width / 2,
+        };
+    }
+  };
 
   const changeTextOnImage = (text) => {
     const existingImage = document.getElementsByTagName('img')[0];
@@ -24,14 +55,19 @@ export default function Home() {
       canvas.width = newWidth;
       canvas.crossOrigin = 'Anonymous';
       canvas.height = newHeight;
-      ctx.imageSmoothingEnabled = false;
+      // ctx.imageSmoothingEnabled = false;
+
       ctx.drawImage(existingImage, 0, 0, newWidth, newHeight);
       ctx.clearRect(0, 0, newWidth, newHeight);
       ctx.font = `${fontSize}px Verdana`;
       ctx.drawImage(existingImage, 0, 0, newWidth, newHeight);
       const color = `#${hexColor}`;
       ctx.fillStyle = isHexValid(color) ? color : '#fff';
-      ctx.fillText(text, 10, 50);
+
+      const { left } = getCoordinates(selectedPosition, width, height);
+      const textWidth = ctx.measureText(text).width;
+      ctx.wordWrap = true;
+      ctx.fillText(text, left - textWidth / 2, newHeight / 2);
 
       // ctx.strokeStyle = '#000';
       // ctx.strokeText(text, 10, 50);
@@ -40,16 +76,20 @@ export default function Home() {
 
   useEffect(() => {
     if (base64) changeTextOnImage(watermarkText);
-  }, [watermarkText, fontSize, hexColor]);
+  }, [watermarkText, fontSize, hexColor, selectedPosition]);
 
   const changeImage = (image) => {
     setWatermarkText('');
     setBase64(image);
   };
 
+  const onTextChange = (event) => setWatermarkText(event.target.value);
+
   const onFontSizeChange = (e) => setFontSize(e.target.value);
 
   const onHexColorChange = (e) => setHexColor(e.target.value);
+
+  const onPositionChange = (e, { value }) => setSelectedPosition(value);
 
   return (
     <Container style={{ padding: '12px 0' }}>
@@ -107,7 +147,27 @@ export default function Home() {
               />
             </Grid.Column>
             <Grid.Column width={8}>
-              <span />
+              <Dropdown
+                text="Watermark Position"
+                floating
+                labeled
+                button
+                onChange={onPositionChange}
+                value={selectedPosition}
+                className="icon"
+              >
+                <Dropdown.Menu>
+                  {_.map(positions, (pos, i) => (
+                    <Dropdown.Item
+                      value={pos}
+                      key={`${i}_${pos}_${_.uniqueId('id')}`}
+                      onClick={onPositionChange}
+                    >
+                      {_.capitalize(pos)}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
             </Grid.Column>
           </Grid.Row>
         </Grid>
