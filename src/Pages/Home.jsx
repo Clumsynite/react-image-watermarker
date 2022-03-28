@@ -91,8 +91,16 @@ export default function Home() {
     if (base64) changeTextOnImage(watermarkText);
   }, [watermarkText, fontSize, hexColor, horizontalPosition, verticalPosition]);
 
-  const changeImage = (image) => {
+  const resetValues = () => {
     setWatermarkText('');
+    setFontSize(40);
+    setHexColor('fff');
+    setHorizontalPosition('center');
+    setVerticalPosition('center');
+  };
+
+  const changeImage = (image) => {
+    resetValues();
     setBase64(image);
   };
 
