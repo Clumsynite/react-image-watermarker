@@ -16,8 +16,10 @@ export default function Home() {
   const [watermarkText, setWatermarkText] = useState('');
   const [fontSize, setFontSize] = useState(40);
   const [hexColor, setHexColor] = useState('fff');
-  const [selectedPosition, setSelectedPosition] = useState('center');
-  const positions = ['center', 'left', 'right'];
+  const [horizontalPosition, setHorizontalPosition] = useState('center');
+  const [verticalPosition, setVerticalPosition] = useState('center');
+  const horizontalPositions = ['center', 'left', 'right'];
+  const verticalPositions = ['center', 'top', 'bottom'];
 
   const getCoordinates = (position, width, height) => {
     switch (position) {
@@ -35,6 +37,16 @@ export default function Home() {
         return {
           top: height / 2,
           left: (width / 4) * 3,
+        };
+      case 'top':
+        return {
+          top: height / 4,
+          left: width / 2,
+        };
+      case 'bottom':
+        return {
+          top: (height / 4) * 3,
+          left: width / 2,
         };
       default:
         return {
@@ -64,10 +76,11 @@ export default function Home() {
       const color = `#${hexColor}`;
       ctx.fillStyle = isHexValid(color) ? color : '#fff';
 
-      const { left } = getCoordinates(selectedPosition, width, height);
+      const { left } = getCoordinates(horizontalPosition, width, height);
+      const { top } = getCoordinates(verticalPosition, width, height);
       const textWidth = ctx.measureText(text).width;
-      ctx.wordWrap = true;
-      ctx.fillText(text, left - textWidth / 2, newHeight / 2);
+
+      ctx.fillText(text, left - textWidth / 2, top);
 
       // ctx.strokeStyle = '#000';
       // ctx.strokeText(text, 10, 50);
@@ -76,7 +89,7 @@ export default function Home() {
 
   useEffect(() => {
     if (base64) changeTextOnImage(watermarkText);
-  }, [watermarkText, fontSize, hexColor, selectedPosition]);
+  }, [watermarkText, fontSize, hexColor, horizontalPosition, verticalPosition]);
 
   const changeImage = (image) => {
     setWatermarkText('');
@@ -89,7 +102,9 @@ export default function Home() {
 
   const onHexColorChange = (e) => setHexColor(e.target.value);
 
-  const onPositionChange = (e, { value }) => setSelectedPosition(value);
+  const onHorizontalPositionChange = (e, { value }) => setHorizontalPosition(value);
+
+  const onVerticalPositionChange = (e, { value }) => setVerticalPosition(value);
 
   return (
     <Container style={{ padding: '12px 0' }}>
@@ -147,27 +162,50 @@ export default function Home() {
               />
             </Grid.Column>
             <Grid.Column width={8}>
-              <Dropdown
-                text="Watermark Position"
-                floating
-                labeled
-                button
-                onChange={onPositionChange}
-                value={selectedPosition}
-                className="icon"
-              >
-                <Dropdown.Menu>
-                  {_.map(positions, (pos, i) => (
-                    <Dropdown.Item
-                      value={pos}
-                      key={`${i}_${pos}_${_.uniqueId('id')}`}
-                      onClick={onPositionChange}
-                    >
-                      {_.capitalize(pos)}
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
+              <Grid.Row centered verticalAlign="middle">
+                <Dropdown
+                  text="Hotizontal Watermark Position"
+                  floating
+                  labeled
+                  button
+                  onChange={onHorizontalPositionChange}
+                  value={horizontalPosition}
+                  className="icon"
+                >
+                  <Dropdown.Menu>
+                    {_.map(horizontalPositions, (pos, i) => (
+                      <Dropdown.Item
+                        value={pos}
+                        key={`${i}_${pos}_${_.uniqueId('id')}`}
+                        onClick={onHorizontalPositionChange}
+                      >
+                        {_.capitalize(pos)}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+                <Dropdown
+                  text="Vertical Watermark Position"
+                  floating
+                  labeled
+                  button
+                  onChange={onVerticalPositionChange}
+                  value={horizontalPosition}
+                  className="icon"
+                >
+                  <Dropdown.Menu>
+                    {_.map(verticalPositions, (pos, i) => (
+                      <Dropdown.Item
+                        value={pos}
+                        key={`${i}_${pos}_${_.uniqueId('id')}`}
+                        onClick={onVerticalPositionChange}
+                      >
+                        {_.capitalize(pos)}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Grid.Row>
             </Grid.Column>
           </Grid.Row>
         </Grid>
