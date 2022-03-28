@@ -24,4 +24,26 @@ const isHexValid = (hex) => {
   return regex.test(hex);
 };
 
-export { getBase64, beforeUpload, isHexValid };
+const downloadBase64AsImage = (dataURL, fileName = 'image.png') => {
+  const link = document.createElement('a');
+  link.download = fileName;
+  link.href = dataURL;
+  link.click();
+};
+
+const getFilenameAndExtension = (file) => {
+  const filename = file.name.split('.');
+  const extension = filename[filename.length - 1];
+  return {
+    filename: filename.slice(0, filename.length - 1).join('.'),
+    extension,
+  };
+};
+
+export {
+  getBase64,
+  beforeUpload,
+  isHexValid,
+  downloadBase64AsImage,
+  getFilenameAndExtension,
+};
